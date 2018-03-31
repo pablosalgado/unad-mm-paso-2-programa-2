@@ -3,22 +3,22 @@
 ; giro, usando el microcontrolador PIC16F84A.
 ;
 ; Pablo Salgado
-; 79535939
+; 
 ;
 ; Microcontroladores y Microprocesadores
-; Escuela de Ciencias Básicas, Tecnología e Ingeniería
+; Escuela de Ciencias BÃ¡sicas, TecnologÃ­a e IngenierÃ­a
 ; UNAD
 
-; Se incluye el archivo de definición de registros y otras configuraciones 
+; Se incluye el archivo de definiciÃ³n de registros y otras configuraciones 
 ; de Microchip Technology
 #include "p16f84a.inc"
 
 __CONFIG _FOSC_XT & _WDTE_ON & _PWRTE_ON & _CP_OFF
     
-; Configuración de registros de uso general 
+; ConfiguraciÃ³n de registros de uso general 
 LASTPB	    EQU	0xC		    ; Va a guardar el estado anterior del puerto
 TMP1	    EQU 0xD		    ; Registro temporal para guardar puerto B
-TMP2	    EQU	0xF		    ; Registro auxiliar para la rutina de invesión	    
+TMP2	    EQU	0xF		    ; Registro auxiliar para la rutina de invesiÃ³n	    
 
     
 RES_VECT    CODE 0x0000		    ; Vector de reinicio del procesador
@@ -31,7 +31,7 @@ MAIN_PROG   CODE		    ; let linker place main program
 
 START
     ; ==========================================================================
-    ; Configuración del puerto B
+    ; ConfiguraciÃ³n del puerto B
     ;
     ; Los dos bits de menor peso se usan como salida y van a controlar las
     ; entradas del puente H L298
@@ -48,20 +48,20 @@ START
    
     ; Configurar el puerto B.
     BSF	    STATUS, RP0		    ; Se selecciona el banco 1 para configurar    
-    MOVLW   0xFC		    ; el registro TRISB con 0xFC indicando así
+    MOVLW   0xFC		    ; el registro TRISB con 0xFC indicando asÃ­
     MOVWF   TRISB		    ; que los dos bits de menor peso son OUT
 
     ; Se habilitan las interrupciones en el puerto B utilizando al flanco de
-    ; bajada puesto que los pines van a estar en 1 y el botón los conecta a 0
+    ; bajada puesto que los pines van a estar en 1 y el botÃ³n los conecta a 0
     BSF	    INTCON, GIE		    ; Habilita las interrupciones
     BSF	    INTCON, RBIE	    ; Habilita las interrupciones en puerto B
     BCF	    OPTION_REG, INTEDG	    ; Define el flanco de bajada
     
     ; El estado inicial del puerto B es Fx, donde x indica que no interesa el 
-    ; estado de los bits que no generan interrupción, de modo que no se tendrán
+    ; estado de los bits que no generan interrupciÃ³n, de modo que no se tendrÃ¡n
     ; en cuenta en las operaciones para determinar que pin ha generado la
-    ; interrupción.
-    ; Así, inicialmente todos los pines de interrupción están en 1, de modo que
+    ; interrupciÃ³n.
+    ; AsÃ­, inicialmente todos los pines de interrupciÃ³n estÃ¡n en 1, de modo que
     ; el estado inicial se puede considerar 0xFF
     MOVLW   0xFF
     MOVWF   LASTPB 
@@ -77,7 +77,7 @@ START
         
     ; ==========================================================================
     ; Rutina para controlar el motor. Simplemente se pone a dormir el micro en
-    ; espera que ocurra una interrupción.
+    ; espera que ocurra una interrupciÃ³n.
     ; ==========================================================================
 MOTOR    
     SLEEP
@@ -87,40 +87,40 @@ MOTOR
     ; Rutina de servicio de interrupciones.
     ; ==========================================================================    
 RSI
-    ; Se determina que la interrupción se haya generado en el puerto B, de lo 
-    ; contrario se retorna de la interrupción
+    ; Se determina que la interrupciÃ³n se haya generado en el puerto B, de lo 
+    ; contrario se retorna de la interrupciÃ³n
     BTFSS   INTCON, RBIF
     RETFIE
     
-    ; Se ha determinado que se ha generado una interrupción en el puerto B. Se
-    ; hace necesario determinar cual pin ha causado la interrupción.
+    ; Se ha determinado que se ha generado una interrupciÃ³n en el puerto B. Se
+    ; hace necesario determinar cual pin ha causado la interrupciÃ³n.
     MOVF    PORTB, 0		    ; Se guarda el estado actual del puerto B
-    MOVWF   TMP1		    ; Este valor se dejará en LASTPB al terminar
+    MOVWF   TMP1		    ; Este valor se dejarÃ¡ en LASTPB al terminar
     
-    ; Esta operación XOR determina si ha cambiado algún bit desde la última vez
-    ; que se generó una interrupción. Es decir, si la ultima vez se generó una 
-    ; interrupción en RB4 (START) y se vuelve a generar esta misma, el resultado
+    ; Esta operaciÃ³n XOR determina si ha cambiado algÃºn bit desde la Ãºltima vez
+    ; que se generÃ³ una interrupciÃ³n. Es decir, si la ultima vez se generÃ³ una 
+    ; interrupciÃ³n en RB4 (START) y se vuelve a generar esta misma, el resultado
     ; es 0x0 y no es necesario volver a iniciar el motor. Si en cambio se genera
-    ; una interrupción en RB5 (STOP), el resultado es 0x2 y se debe atender la
-    ; interrupción para detener el motor.
+    ; una interrupciÃ³n en RB5 (STOP), el resultado es 0x2 y se debe atender la
+    ; interrupciÃ³n para detener el motor.
     XORWF   LASTPB, 1		    
     
-    BTFSC   LASTPB, RB4		    ; ¿El bit 4 ha cambiado?
-    CALL    START_ENG		    ; El bit 4 cambió. Se debe arrancar el motor.
+    BTFSC   LASTPB, RB4		    ; Â¿El bit 4 ha cambiado?
+    CALL    START_ENG		    ; El bit 4 cambiÃ³. Se debe arrancar el motor.
     
-    BTFSC   LASTPB, RB5		    ; ¿El bit 5 ha cambiado?
-    CALL    STOP_ENG		    ; El bit 5 cambió. Se debe detener el motor.
+    BTFSC   LASTPB, RB5		    ; Â¿El bit 5 ha cambiado?
+    CALL    STOP_ENG		    ; El bit 5 cambiÃ³. Se debe detener el motor.
 
-    BTFSC   LASTPB, RB6		    ; ¿El bit 6 ha cambiado?
-    CALL    INV_ENG		    ; El bit 6 cambió. Se debe invertir la marcha.
+    BTFSC   LASTPB, RB6		    ; Â¿El bit 6 ha cambiado?
+    CALL    INV_ENG		    ; El bit 6 cambiÃ³. Se debe invertir la marcha.
 				    ; del motor.
     
     ; Se recupera el estado del puerto B al iniciar la rutina de servicio de
-    ; interrupción.
+    ; interrupciÃ³n.
     MOVF    TMP1, 0
     MOVWF   LASTPB
     
-    ; Se borran las banderas de interrupción y termina la rutina de servicio
+    ; Se borran las banderas de interrupciÃ³n y termina la rutina de servicio
     BCF	    INTCON, RBIF
     
     RETFIE
@@ -130,7 +130,7 @@ RSI
     ; ==========================================================================        
 START_ENG
     BTFSS   PORTB, RB4		    ; Se retorna si este pin no ha generado la
-    RETURN			    ; interrupción
+    RETURN			    ; interrupciÃ³n
     
     ; Para arrancar el motor se debe colocar 01 o 10 en los pines de entrada del
     ; motor 1 del puente H L298.
@@ -143,7 +143,7 @@ START_ENG
     ; ==========================================================================        
 STOP_ENG
     BTFSS   PORTB, RB5		    ; Se retorna si este pin no ha generado la
-    RETURN			    ; interrupción
+    RETURN			    ; interrupciÃ³n
 
     ; Para detener el motor se debe colocar 00 o 11 en los pines de entrada del
     ; motor 1 del puente H L298.
@@ -157,29 +157,29 @@ STOP_ENG
     ; ==========================================================================        
 INV_ENG
     BTFSS   PORTB, RB6		    ; Se retorna si este pin no ha generado la
-    RETURN			    ; interrupción
+    RETURN			    ; interrupciÃ³n
 
-    ; Solo se puede invertir si el motor está en marcha, es decir los dos bits
-    ; de menor peso del puerto B están en 01 o 10.
+    ; Solo se puede invertir si el motor estÃ¡ en marcha, es decir los dos bits
+    ; de menor peso del puerto B estÃ¡n en 01 o 10.
     
     ; Si se tiene 00, no se puede invertir la marcha
     MOVF    PORTB, 0		    ; Se lee el estado del puerto B al registro W
     ANDLW   0x3			    ; Y se aislan los dos bits de menor peso
-    BTFSC   STATUS, Z		    ; ¿Es diferente de cero el resultado?
+    BTFSC   STATUS, Z		    ; Â¿Es diferente de cero el resultado?
     RETURN			    ; Retorna porque se tiene 00
     
     ; Si se tiene 11, no se puede invertir la marcha
 ;    MOVF    PORTB, 0		    ; Se lee el estado del puerto B al registro W
 ;    ANDLW   0x3			    ; Y se aislan los dos bits de menor peso
 ;    SUBLW   0x3
-;    BTFSC   STATUS, Z		    ; ¿Es diferente de cero el resultado?
+;    BTFSC   STATUS, Z		    ; Â¿Es diferente de cero el resultado?
 ;    RETURN			    ; Retorna porque se tiene 11
 
     ; Si se tiene 01, entonces se coloca 10
     MOVF    PORTB, 0		    ; Se lee el estado del puerto B al registro W
     ANDLW   0x3			    ; Y se aislan los dos bits de menor peso
     SUBLW   0x1			    
-    BTFSS   STATUS, Z		    ; ¿Es diferente de cero el resultado?    
+    BTFSS   STATUS, Z		    ; Â¿Es diferente de cero el resultado?    
     GOTO    T10			    ; Entonces se intenta con 10
     
     ; Invertir la marcha del motor, se coloca RB0=0 y RB1=1
